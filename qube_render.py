@@ -1,4 +1,3 @@
-from gym.envs.classic_control import rendering
 import vpython as vp
 import numpy as np
 
@@ -97,37 +96,3 @@ class QubeRendererVypthon:
 
     def close(self, *args, **kwargs):
         pass
-
-
-class QubeRenderer2D:
-    def __init__(self, theta, alpha, frequency):
-        width, height = (640, 240)
-        self._viewer = rendering.Viewer(width, height)
-        l, r, t, b = (2, -2, 0, 100)
-        theta_poly = rendering.make_polygon([(l, b), (l, t), (r, t), (r, b)])
-        l, r, t, b = (2, -2, 0, 100)
-        alpha_poly = rendering.make_polygon([(l, b), (l, t), (r, t), (r, b)])
-        theta_circle = rendering.make_circle(radius=100, res=64, filled=False)
-        theta_circle.set_color(0.5, 0.5, 0.5)  # Theta is grey
-        alpha_circle = rendering.make_circle(radius=100, res=64, filled=False)
-        alpha_circle.set_color(0.8, 0.0, 0.0)  # Alpha is red
-        theta_origin = (width / 2 - 150, height / 2)
-        alpha_origin = (width / 2 + 150, height / 2)
-        self._theta_tx = rendering.Transform(translation=theta_origin)
-        self._alpha_tx = rendering.Transform(translation=alpha_origin)
-        theta_poly.add_attr(self._theta_tx)
-        alpha_poly.add_attr(self._alpha_tx)
-        theta_circle.add_attr(self._theta_tx)
-        alpha_circle.add_attr(self._alpha_tx)
-        self._viewer.add_geom(theta_poly)
-        self._viewer.add_geom(alpha_poly)
-        self._viewer.add_geom(theta_circle)
-        self._viewer.add_geom(alpha_circle)
-
-    def render(self, theta, alpha):
-        self._theta_tx.set_rotation(self._theta + np.pi)
-        self._alpha_tx.set_rotation(self._alpha)
-        return self._viewer.render(return_rgb_array=mode == "rgb_array")
-
-    def close(self):
-        self._viewer.close()

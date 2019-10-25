@@ -1,88 +1,38 @@
-# Quanser OpenAI Driver
-Has an OpenAI Gym wrapper for the Quanser Qube Servo 2 and Quanser Aero
+# Quanser Qube - Servo2 sim
+For more information about the Qube click [here](https://www.quanser.com/products/qube-servo-2/)
 
-- [Setup](#setup)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-    - [Recompiling Cython](#recompiling-cython-code)
-- [Basic Usage](#usage)
-- [Warning](#warning)
+![](img/QUBE-Servo_2_angled_pendulum.jpg)
 
-
-# Setup
-We have tested on Ubuntu 16.04 LTS and Ubuntu 18.04 LTS using Python 2.7 and Python 3.6.5<br>
-
-
-### Prerequisites
-Install the HIL SDK from Quanser.<br>
-A mirror is available at https://github.com/BlueRiverTech/hil_sdk_linux_x86_64.<br>
-
-You can install the driver by:
-```bash
-    git clone https://github.com/BlueRiverTech/hil_sdk_linux_x86_64.git
-    sudo ./hil_sdk_linux_x86_64/setup_hil_sdk
+## Simulator structure
+```
+├── README.md
+├── qube_interfaces.py
+├── qube_render.py
+├── qube_simulator.py
+└── requirements.txt
 ```
 
-You also must have pip installed:
-```bash
-    sudo apt-get install python3-pip
+### reset_down()
+Info:
+
+- Reset starts the pendulum from the bottom (at rest).
+- The task is to flip up the pendulum and hold it upright.
+- Episode ends once the theta angle is greater than 90 degrees.
+- Reward should be a function of the angles theta (arm angle) and alpha (pendulum), and the alpha angular velocity.
+    - Encourages the the arm to stay centered, the pendulum to stay upright, and to stay stationary.
+
+
+### reset_up()
+Info:
+
+- Reset starts the pendulum from the top (flipped up/inverted).
+- The task is to hold the pendulum upright.
+- Episode ends once the alpha angle is greater the 20 degrees or theta angle is greater than 90 degrees.
+- Reward should be a function of the angles theta (arm angle) and alpha (pendulum), and the alpha angular velocity.
+    - Encourages the the arm to stay centered, the pendulum to stay upright, and to stay stationary.
+
+## Usage
+
 ```
 
-**Note:** this requires a version of the HIL SDK that supports buffer overwrite on overflow (circular buffers).<br>
-(The mirror posted above supports buffer overflow.)<br>
-
-
-### Installation
-We recommend that you use a virtual environment such as [virtualenv](https://virtualenv.pypa.io/en/stable/), [conda](https://conda.io/docs/user-guide/getting-started.html), or [Pipenv](https://pipenv.readthedocs.io/en/latest/)
-
-You can install the driver by cloning and pip-installing:
-```bash
-    git clone https://github.com/BlueRiverTech/quanser-openai-driver.git
-    cd quanser-openai-driver
-    pip3 install -e .
 ```
-
-Once you have that setup: Run the classical control baseline (ensure the Qube is connected to your computer)<br>
-```bash
-python tests/test.py --env QubeSwingupEnv --control flip
-```
-
-
-# Usage
-Usage is very similar to most OpenAI gym environments but **requires** that you close the environment when finished.
-Without safely closing the Env, bad things may happen. Usually you will not be able to reopen the board.
-
-This can be done with a context manager using a `with` statement
-```python
-import gym
-from gym_brt import QubeSwingupEnv
-
-num_episodes = 10
-num_steps = 250
-
-with QubeSwingupEnv() as env:
-    for episode in range(num_episodes):
-        state = env.reset()
-        for step in range(num_steps):
-            action = env.action_space.sample()
-            state, reward, done, _ = env.step(action)
-```
-
-Or can be closed manually by using `env.close()`. You can see an [example here](docs/alternatives.md#usage).
-
-
-# Environments
-Information about various environments can be found in [docs/envs](docs/envs.md).
-
-
-# Control
-Information about baselines can be found in [docs/control](docs/control.md).
-
-
-# Hardware Wrapper
-Information about the Python wrapper for Quanser hardware and Qube Servo 2 simulator can be found in [docs/quanser](docs/quanser.md).
-
-
-# Warning
-Forgetting to close the environment or incorrectly closing the env leads to several possible issues. The worst including segfaults.
-
