@@ -31,6 +31,12 @@ Info:
 - Reward should be a function of the angles theta (arm angle) and alpha (pendulum), and the alpha angular velocity.
     - Encourages the the arm to stay centered, the pendulum to stay upright, and to stay stationary.
 
+## Action
+`action = Vm`
+
+## States
+`state = [theta, alpha, theta_dot, alpha_dot]`
+
 ## Usage
 
 ```
