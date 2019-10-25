@@ -42,7 +42,9 @@ class QubeSimulator(object):
             np.array([0, 0, 0, 0], dtype=np.float64) + np.random.randn(4) * 0.01
         )
 
-    def step(self, action, led=None):
+        self.count_view = False
+
+    def step(self, action):
         action = np.clip(action, -self._max_voltage, self._max_voltage)
         self.state = self._forward_model_ode(
             *self.state, action, self._dt, self._integration_steps
@@ -71,9 +73,14 @@ class QubeSimulator(object):
             self.state = np.array([config["theta"], config["alpha"],
                                    config["theta_dot"], config["alpha_dot"]])
             
-
         return self.state
-    
+
+    def view(self):
+        if self.count_view == False:
+            self.viewer = QubeRendererVypthon(self.state[0], self.state[1], self.frequency)
+            self.count_view = True
+        self.viewer.render(self.state[0], self.state[1])
+
     def _diff_forward_model_ode(self, state, t, action, dt):
         theta, alpha, theta_dot, alpha_dot = state
         Vm = action
@@ -122,13 +129,8 @@ if __name__ == '__main__':
 
         print('episode: ', episode)
         state = qube.reset_up(config)
-        theta0 = qube.state[0]
-        alpha0 = qube.state[1]
-        if episode == 0:
-            viewer = QubeRendererVypthon(theta0, alpha0, qube.frequency)
         
         for i in range(2048):
             action = random.uniform(-3, 3)
             state = qube.step(action)
-            viewer.render(state[0], state[1])
-        viewer.close()
+            qube.view()

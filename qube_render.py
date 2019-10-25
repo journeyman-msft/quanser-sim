@@ -93,6 +93,3 @@ class QubeRendererVypthon:
             origin=self.pendulum_origin(theta),
         )
         vp.rate(self.frequency)
-
-    def close(self, *args, **kwargs):
-        pass

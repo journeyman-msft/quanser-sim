@@ -6,7 +6,6 @@ For more information about the Qube click [here](https://www.quanser.com/product
 ## Simulator structure
 ```
 ├── README.md
-├── qube_interfaces.py
 ├── qube_render.py
 ├── qube_simulator.py
 └── requirements.txt
@@ -40,5 +39,26 @@ Info:
 ## Usage
 
 ```
+    qube = QubeSimulator(frequency=250)
+    
+    for episode in range(2):
+        # Optional config
+        config = {
+            # Parameters
+            "Lp": 0.129,
+            "mp": 0.024,
+            # Initial Conditions
+            "theta": 0 + np.random.randn() * 0.01,
+            "alpha": 0 + np.random.randn() * 0.01, # make sure pi if reset_down
+            "theta_dot": 0 + np.random.randn() * 0.01,
+            "alpha_dot": 0 + np.random.randn() * 0.01
+        }
 
+        print('episode: ', episode)
+        state = qube.reset_up(config)
+        
+        for i in range(2048):
+            action = random.uniform(-3, 3)
+            state = qube.step(action)
+            qube.view()
 ```
