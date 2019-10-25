@@ -78,6 +78,8 @@ class QubeSimulator(object):
     def view(self):
         if self.count_view == False:
             self.viewer = QubeRendererVypthon(self.state[0], self.state[1], self.frequency)
+            self.viewer.pen_l = self.Lp
+            self.viewer.pen_d = (self.mp / .024) * 0.00475
             self.count_view = True
         self.viewer.render(self.state[0], self.state[1])
 
