@@ -8,7 +8,7 @@ import numpy as np
 import random
 from scipy.integrate import odeint
 
-from qube_render import QubeRendererVypthon
+from render_qube import QubeRendererVpython
 
 class QubeSimulator(object):
     """Simulator that has the same interface as the hardware wrapper."""
@@ -39,7 +39,7 @@ class QubeSimulator(object):
         self.g = 9.81  # Gravity constant
 
         self.state = (
-            np.array([0, 0, 0, 0], dtype=np.float64) + np.random.randn(4) * 0.01
+            np.array([0, 0, 0, 0], dtype=np.float64) + np.random.randn(4) * 0.05
         )
 
         self.count_view = False
@@ -53,7 +53,7 @@ class QubeSimulator(object):
 
     def reset_up(self, config=None):
         self.state = (
-            np.array([0, 0, 0, 0], dtype=np.float64) + np.random.randn(4) * 0.01
+            np.array([0, 0, 0, 0], dtype=np.float64) + np.random.randn(4) * 0.05
         )
         if config:
             self.Lp = config["Lp"]
@@ -65,7 +65,7 @@ class QubeSimulator(object):
 
     def reset_down(self, config=None):
         self.state = (
-            np.array([0, np.pi, 0, 0], dtype=np.float64) + np.random.randn(4) * 0.01
+            np.array([0, np.pi, 0, 0], dtype=np.float64) + np.random.randn(4) * 0.05
         )
         if config:
             self.Lp = config["Lp"]
@@ -77,7 +77,7 @@ class QubeSimulator(object):
 
     def view(self):
         if self.count_view == False:
-            self.viewer = QubeRendererVypthon(self.state[0], self.state[1], self.frequency)
+            self.viewer = QubeRendererVpython(self.state[0], self.state[1], self.frequency)
             self.viewer.pen_l = self.Lp
             self.viewer.pen_d = (self.mp / .024) * 0.00475
             self.count_view = True
@@ -115,6 +115,9 @@ class QubeSimulator(object):
 
 if __name__ == '__main__':
     qube = QubeSimulator(frequency=250)
+
+    ## LQR benchmark controller gains
+    #K = np.array([-2.0, 35.0, -1.5, 3.0])
     
     for episode in range(2):
         # Optional config
@@ -123,10 +126,10 @@ if __name__ == '__main__':
             "Lp": 0.129,
             "mp": 0.024,
             # Initial Conditions
-            "theta": 0 + np.random.randn() * 0.01,
-            "alpha": 0 + np.random.randn() * 0.01, # make sure pi if reset_down
-            "theta_dot": 0 + np.random.randn() * 0.01,
-            "alpha_dot": 0 + np.random.randn() * 0.01
+            "theta": random.randint(0, 360) * 2 * np.pi / 360,
+            "alpha": 0 + np.random.randn() * 0.05, # make sure pi if reset_down
+            "theta_dot": 0 + np.random.randn() * 0.05,
+            "alpha_dot": 0 + np.random.randn() * 0.05
         }
 
         print('episode: ', episode)
@@ -134,5 +137,6 @@ if __name__ == '__main__':
         
         for i in range(2048):
             action = random.uniform(-3, 3)
+            #action = K.dot(state)
             state = qube.step(action)
             qube.view()

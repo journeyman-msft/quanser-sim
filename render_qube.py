@@ -2,7 +2,7 @@ import vpython as vp
 import numpy as np
 
 
-class QubeRendererVypthon:
+class QubeRendererVpython:
     def __init__(self, theta, alpha, frequency):
         self.frequency = frequency
         vp.scene.width, vp.scene.height = 1000, 600

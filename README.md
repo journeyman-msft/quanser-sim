@@ -6,7 +6,7 @@ For more information about the Qube click [here](https://www.quanser.com/product
 ## Simulator structure
 ```
 ├── README.md
-├── qube_render.py
+├── render_qube.py
 ├── qube_simulator.py
 └── requirements.txt
 ```
@@ -40,6 +40,9 @@ Info:
 
 ```
     qube = QubeSimulator(frequency=250)
+
+    ## LQR benchmark controller gains
+    #K = np.array([-2.0, 35.0, -1.5, 3.0])
     
     for episode in range(2):
         # Optional config
@@ -48,10 +51,10 @@ Info:
             "Lp": 0.129,
             "mp": 0.024,
             # Initial Conditions
-            "theta": 0 + np.random.randn() * 0.01,
-            "alpha": 0 + np.random.randn() * 0.01, # make sure pi if reset_down
-            "theta_dot": 0 + np.random.randn() * 0.01,
-            "alpha_dot": 0 + np.random.randn() * 0.01
+            "theta": random.randint(0, 360) * 2 * np.pi / 360,
+            "alpha": 0 + np.random.randn() * 0.05, # make sure pi if reset_down
+            "theta_dot": 0 + np.random.randn() * 0.05,
+            "alpha_dot": 0 + np.random.randn() * 0.05
         }
 
         print('episode: ', episode)
@@ -59,6 +62,7 @@ Info:
         
         for i in range(2048):
             action = random.uniform(-3, 3)
+            #action = K.dot(state)
             state = qube.step(action)
             qube.view()
 ```
